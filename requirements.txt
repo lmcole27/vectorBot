@@ -1,0 +1,13 @@
+OpenAI
+Flask
+python-dotenv
+chromadb
+#chromadb.utils
+sentence-transformers
+flask-cors
+APScheduler
+PyPDF2 
+pathlib
+#pdfminer.six
+#transformers
+#torch
