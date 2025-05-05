@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
         responseContainer.innerHTML = '';
         const response = await fetch('/generate', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
 
         let question = document.getElementById('question').value;
@@ -45,24 +46,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 window.onload = () => {
-    fetch('http://127.0.0.1:5001/api/get_session', {
-        method: 'GET', // HTTP method
+    fetch('/api/get_session', {
+        method: 'GET',
         headers: {
-            'Content-Type': 'application/json' // Tells the server you're sending JSON
+            'Content-Type': 'application/json'
         },
-        credentials: 'include',
-        //body: JSON.stringify('xyz')
-      })
-      .then(res => res.json())
-      .then(data => {
+        credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => {
         if (data.success) {
-          const token = data.token
-          showOutput(`Welcome Guest ${token}`);
-          closePopup();
+            const token = data.token;
+            showOutput(`Welcome Guest ${token}`);
+            closePopup();
         } else {
             showPopup();
         }
-})
+    });
 };
 
 function showPopup() {
@@ -83,21 +83,21 @@ function showOutput(data) {
   }
 
 function setGuestToken() {
-    fetch('http://127.0.0.1:5001/api/set_session',{
+    fetch('/api/set_session', {
         method: 'GET',
-        headers:{'Content-Type': 'application/json'},
-        credentials: 'include',
-        //body:JSON.stringify('xyz')
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            const token = data.token
+            const token = data.token;
             showOutput(`Welcome Guest ${token}`);
             closePopup();
-          } else {
-              showPopup();
-          }
+        } else {
+            showPopup();
         }
-    )
+    });
 }

@@ -17,10 +17,6 @@ from apscheduler.schedulers.background import BackgroundScheduler # type: ignore
 from dataContext import getContext
 from history import load_chat, add_message, save_chat, history_cleanup
 import chromadb
-import warnings
-
-warnings.filterwarnings('ignore', category=UserWarning, module='multiprocessing.resource_tracker')
-
 load_dotenv()
 
 
@@ -48,6 +44,9 @@ client = OpenAI(api_key=os.environ['OPENAI_API_KEY'], organization=os.environ['O
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.secret_key = os.environ['FLASK_SECRET_KEY']
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 def generate_response(question: str, chat_history, context):
     # Send API request to ChatGPT and recieve resonse
@@ -142,8 +141,14 @@ def receive_post():
 
 
 # Schedule job
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=history_cleanup, trigger="interval", hours=1)
+scheduler = BackgroundScheduler(daemon=True)
+scheduler.add_job(
+    func=history_cleanup,
+    trigger="interval",
+    minutes=5,
+    id='history_cleanup',
+    replace_existing=True
+)
 scheduler.start()
 
 # Shut down the scheduler when exiting the app
